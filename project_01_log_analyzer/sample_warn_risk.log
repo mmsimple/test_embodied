@@ -1,0 +1,10 @@
+2026-05-20 10:00:01.120 [INFO] [system] robot boot completed
+2026-05-20 10:00:02.006 [INFO] [nav] navigation stack started
+2026-05-20 10:00:03.422 [WARN] [perception] depth frame dropped
+2026-05-20 10:00:04.110 [WARN] [nav] local planner replan triggered
+2026-05-20 10:00:05.114 [WARN] [perception] depth frame dropped
+2026-05-20 10:00:06.128 [WARN] [battery] voltage low
+2026-05-20 10:00:07.560 [WARN] [nav] obstacle too close
+2026-05-20 10:00:08.301 [WARN] [localization] pose covariance increased
+2026-05-20 10:00:09.301 [INFO] [nav] path updated
+2026-05-20 10:00:10.301 [INFO] [system] task completed

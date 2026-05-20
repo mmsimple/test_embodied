@@ -1,0 +1,4 @@
+﻿title,module,message,count,priority,suggestion
+[control] motor timeout,control,motor timeout,2,P1,优先建 Bug 并补充复现材料
+[task_manager] task execution interrupted,task_manager,task execution interrupted,1,P2,观察是否复现，必要时合并到相关 Bug
+[nav] recovery behavior failed,nav,recovery behavior failed,1,P2,观察是否复现，必要时合并到相关 Bug

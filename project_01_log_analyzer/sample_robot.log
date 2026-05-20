@@ -1,0 +1,15 @@
+2026-05-20 09:00:01.120 [INFO] [system] robot boot completed
+2026-05-20 09:00:02.006 [INFO] [nav] navigation stack started
+2026-05-20 09:00:02.422 [WARN] [perception] depth frame dropped
+2026-05-20 09:00:03.008 [INFO] [localization] initial pose received
+2026-05-20 09:00:04.110 [WARN] [nav] local planner replan triggered
+2026-05-20 09:00:05.883 [ERROR] [control] motor timeout
+2026-05-20 09:00:06.114 [WARN] [perception] depth frame dropped
+2026-05-20 09:00:07.301 [INFO] [nav] path updated
+2026-05-20 09:00:08.912 [ERROR] [control] motor timeout
+2026-05-20 09:00:09.128 [WARN] [battery] voltage low
+2026-05-20 09:00:10.667 [EXCEPTION] [task_manager] task execution interrupted
+2026-05-20 09:00:11.100 [INFO] [system] emergency stop released
+2026-05-20 09:00:12.560 [WARN] [nav] obstacle too close
+bad log line without expected fields
+2026-05-20 09:00:13.901 [ERROR] [nav] recovery behavior failed

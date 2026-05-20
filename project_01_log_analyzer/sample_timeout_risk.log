@@ -1,0 +1,7 @@
+2026-05-20 11:00:01.120 [INFO] [system] robot boot completed
+2026-05-20 11:00:02.006 [INFO] [nav] navigation stack started
+2026-05-20 11:00:03.422 [WARN] [control] motor timeout
+2026-05-20 11:00:04.110 [WARN] [perception] camera timeout
+2026-05-20 11:00:05.114 [WARN] [task_manager] service timeout
+2026-05-20 11:00:06.301 [INFO] [nav] path updated
+2026-05-20 11:00:07.301 [INFO] [system] task completed
