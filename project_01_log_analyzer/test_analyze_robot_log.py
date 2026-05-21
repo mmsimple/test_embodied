@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from analyze_robot_log import (
     analyze_log,
+    build_summary_row,
     build_defect_candidate_rows,
     parse_log_line,
     write_defect_candidates_csv,
@@ -80,6 +81,25 @@ class TestAnalyzeRobotLog(unittest.TestCase):
         self.assertEqual(analysis["result"], "RISK")
         self.assertEqual(analysis["timeout_count"], 3)
 
+    def test_pass_when_no_risk_or_failure(self):
+        lines = [
+            "2026-05-20 09:00:01.000 [INFO] [system] robot boot completed",
+            "2026-05-20 09:00:02.000 [INFO] [nav] navigation stack started",
+            "2026-05-20 09:00:03.000 [WARN] [perception] depth frame dropped",
+            "2026-05-20 09:00:04.000 [WARN] [nav] local planner replan triggered",
+            "2026-05-20 09:00:05.000 [INFO] [system] task completed",
+        ]
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            log_path = Path(temp_dir) / "robot.log"
+            log_path.write_text("\n".join(lines), encoding="utf-8")
+            analysis = analyze_log(log_path)
+
+        self.assertEqual(analysis["result"], "PASS")
+        self.assertEqual(analysis["severe_count"], 0)
+        self.assertEqual(analysis["warn_count"], 2)
+        self.assertEqual(analysis["timeout_count"], 0)
+
     def test_build_defect_candidate_rows_with_priority_and_suggestion(self):
         rows = build_defect_candidate_rows(
             Counter(
@@ -109,6 +129,43 @@ class TestAnalyzeRobotLog(unittest.TestCase):
         self.assertEqual(rows[0]["title"], "[control] motor timeout")
         self.assertEqual(rows[0]["priority"], "P1")
         self.assertEqual(rows[0]["suggestion"], "优先建 Bug 并补充复现材料")
+
+    def test_build_summary_row(self):
+        analysis = {
+            "result": "FAIL",
+            "total_lines": 10,
+            "parsed_count": 9,
+            "invalid_lines": [(10, "bad line")],
+            "warn_count": 2,
+            "severe_count": 1,
+            "timeout_count": 1,
+            "module_issue_counter": Counter({"control": 3, "nav": 1}),
+        }
+
+        row = build_summary_row(Path("robot_001.log"), analysis)
+
+        self.assertEqual(row["log_file"], "robot_001.log")
+        self.assertEqual(row["result"], "FAIL")
+        self.assertEqual(row["release_blocker"], "YES")
+        self.assertEqual(row["invalid_count"], 1)
+        self.assertEqual(row["top_issue_module"], "control")
+
+    def test_build_summary_row_not_release_blocker_when_not_fail(self):
+        analysis = {
+            "result": "RISK",
+            "total_lines": 10,
+            "parsed_count": 10,
+            "invalid_lines": [],
+            "warn_count": 6,
+            "severe_count": 0,
+            "timeout_count": 0,
+            "module_issue_counter": Counter({"nav": 2}),
+        }
+
+        row = build_summary_row(Path("robot_002.log"), analysis)
+
+        self.assertEqual(row["result"], "RISK")
+        self.assertEqual(row["release_blocker"], "NO")
 
 
 if __name__ == "__main__":

@@ -173,6 +173,26 @@ project_01_log_analyzer/LESSON_05_automated_tests.md
 python -m unittest .\project_01_log_analyzer\test_analyze_robot_log.py
 ```
 
+### 任务 9：批量分析多份日志
+
+阅读：
+
+```text
+project_01_log_analyzer/LESSON_06_batch_summary.md
+```
+
+运行：
+
+```powershell
+python .\project_01_log_analyzer\analyze_robot_log.py --input-dir .\project_01_log_analyzer
+```
+
+查看：
+
+```text
+project_01_log_analyzer/reports/batch_summary.csv
+```
+
 ## 面试或入职表达方式
 
 你可以这样介绍这个项目：

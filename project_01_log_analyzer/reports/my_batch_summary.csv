@@ -1,0 +1,4 @@
+﻿log_file,result,total_lines,parsed_count,invalid_count,warn_count,severe_count,timeout_count,top_issue_module
+sample_robot.log,FAIL,15,14,1,5,4,2,nav
+sample_timeout_risk.log,RISK,7,7,0,3,0,3,control
+sample_warn_risk.log,RISK,10,10,0,6,0,0,perception

@@ -19,8 +19,10 @@ SEVERE_LEVELS = {"ERROR", "EXCEPTION"}
 def parse_args():
     parser = argparse.ArgumentParser(description="Analyze robot runtime logs.")
     parser.add_argument("--input", help="Path to the robot log file.")
+    parser.add_argument("--input-dir", help="Path to a directory containing log files.")
     parser.add_argument("--output", help="Path to the Markdown report.")
     parser.add_argument("--csv-output", help="Path to the defect candidates CSV file.")
+    parser.add_argument("--summary-output", help="Path to the batch summary CSV file.")
     return parser.parse_args()
 
 
@@ -148,6 +150,52 @@ def write_defect_candidates_csv(counter, csv_path):
         writer.writerows(rows)
 
 
+def build_summary_row(log_path, analysis):
+    top_issue_module = ""
+    if analysis["module_issue_counter"]:
+        top_issue_module = analysis["module_issue_counter"].most_common(1)[0][0]
+
+    return {
+        "log_file": log_path.name,
+        "result": analysis["result"],
+        "release_blocker": "YES" if analysis["result"] == "FAIL" else "NO",
+        "total_lines": analysis["total_lines"],
+        "parsed_count": analysis["parsed_count"],
+        "invalid_count": len(analysis["invalid_lines"]),
+        "warn_count": analysis["warn_count"],
+        "severe_count": analysis["severe_count"],
+        "timeout_count": analysis["timeout_count"],
+        "top_issue_module": top_issue_module,
+    }
+
+
+def write_batch_summary_csv(input_dir, summary_path):
+    log_paths = sorted(input_dir.glob("*.log"))
+    rows = [build_summary_row(log_path, analyze_log(log_path)) for log_path in log_paths]
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+
+    with summary_path.open("w", encoding="utf-8-sig", newline="") as file:
+        writer = csv.DictWriter(
+            file,
+            fieldnames=[
+                "log_file",
+                "result",
+                "release_blocker",
+                "total_lines",
+                "parsed_count",
+                "invalid_count",
+                "warn_count",
+                "severe_count",
+                "timeout_count",
+                "top_issue_module",
+            ],
+        )
+        writer.writeheader()
+        writer.writerows(rows)
+
+    return rows
+
+
 def generate_report(analysis, log_path):
     invalid_preview = analysis["invalid_lines"][:5]
     invalid_lines_text = "_无_"
@@ -208,6 +256,33 @@ def generate_report(analysis, log_path):
 def main():
     args = parse_args()
     project_dir = Path(__file__).resolve().parent
+
+    if args.input_dir:
+        input_dir = Path(args.input_dir)
+        summary_output_path = (
+            Path(args.summary_output)
+            if args.summary_output
+            else project_dir / "reports" / "batch_summary.csv"
+        )
+
+        if not input_dir.exists():
+            raise FileNotFoundError(f"Input directory does not exist: {input_dir}")
+
+        if not input_dir.is_dir():
+            raise NotADirectoryError(f"Input path is not a directory: {input_dir}")
+
+        if summary_output_path.suffix.lower() != ".csv":
+            raise ValueError(
+                "Summary output path should be a CSV file ending with .csv: "
+                f"{summary_output_path}"
+            )
+
+        rows = write_batch_summary_csv(input_dir, summary_output_path)
+        print(f"Input directory: {input_dir}")
+        print(f"Batch summary generated: {summary_output_path}")
+        print(f"Log files analyzed: {len(rows)}")
+        return
+
     log_path = Path(args.input) if args.input else project_dir / "sample_robot.log"
     output_path = (
         Path(args.output)
